@@ -27,7 +27,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          submodules: recursive
+
+      - name: Configure Git for HTTPS submodules
+        run: |
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+
+      - name: Sync and initialize submodules
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --recursive
         
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -46,7 +54,7 @@ jobs:
           
       - name: Install dependencies
         run: |
-          bun install
+          bun install --frozen-lockfile
 
       - name: Build and create zip
         run: python helpers/build_zip.py
